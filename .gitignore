@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+.venv/
+venv/
+pip-wheel-metadata/
+
+# VS Code
+.vscode/
+.idea/
+*.code-workspace
+
+# AUR build artifacts
+packaging/aur/src/
+packaging/aur/pkg/
+packaging/aur/*.pkg.tar.*
+packaging/aur/*.tar.gz
+
+# macOS
+.DS_Store

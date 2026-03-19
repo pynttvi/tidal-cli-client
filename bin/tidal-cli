@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+set -eu
+
+APP_DIR="/usr/lib/tidal-cli-client"
+VENV_PY="$APP_DIR/.venv/bin/python3"
+
+if [ ! -d "$APP_DIR" ]; then
+  echo "tidal-cli-client is not installed at $APP_DIR" >&2
+  echo "Run scripts/install-system.sh or install via AUR package." >&2
+  exit 1
+fi
+
+if [ -x "$VENV_PY" ]; then
+  exec "$VENV_PY" "$APP_DIR/python_tidal_cli.py" "$@"
+fi
+
+# Fallback for package-manager installs without local venv.
+exec python3 "$APP_DIR/python_tidal_cli.py" "$@"
