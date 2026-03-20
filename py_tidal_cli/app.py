@@ -15,7 +15,7 @@ from .tidal_backend import SearchResult, TidalBackend
 
 HELP_TEXT = (
     "Commands: search <query> | search <type> <query> (track/album/artist/playlist also work) | playlists | queue | pause | resume | "
-    "next | skip <n> | shuffle | home | quit | g=home | Enter=open/play | Backspace=back"
+    "next | skip <n> | shuffle | home | quit | g=home | p=play+queue album/playlist | Enter=open/play | Backspace=back"
 )
 
 
@@ -70,9 +70,17 @@ class CursesTidalApp:
 
         self.state.status = "Signed in"
 
-    def _safe_addnstr(self, stdscr: curses.window, y: int, x: int, text: str, max_width: int, attr: int = curses.A_NORMAL) -> None:
+    def _safe_addnstr(
+        self,
+        stdscr: curses.window,
+        y: int,
+        x: int,
+        text: str,
+        max_width: int,
+        attr: int = curses.A_NORMAL,
+    ) -> None:
         """Safely add a string to curses window with UTF-8 support.
-        
+
         Uses addstr() instead of addnstr() to properly handle UTF-8 multi-byte characters.
         """
         try:
@@ -80,12 +88,12 @@ class CursesTidalApp:
             height, width = stdscr.getmaxyx()
             if y < 0 or y >= height or x < 0 or x >= width:
                 return
-            
+
             # Truncate string to fit within the window
             # Keep it simple - just truncate the string if it's too long
             if len(text) > max_width:
                 text = text[:max_width]
-            
+
             # Use addstr() which properly handles UTF-8
             # Move to position and add the string with attribute
             try:
@@ -213,6 +221,7 @@ class CursesTidalApp:
             "  Backspace or h: back",
             "  g: go to home",
             "  j/k or arrows: move",
+            "  p: play first + queue selected album/playlist (in list view)",
             "  n/a: queue selected next/end (in list view)",
             "  l: play next queued track",
         ]
@@ -516,7 +525,21 @@ class CursesTidalApp:
                     selected = self.state.list_items[self.state.selected_index]
                     tracks = self.backend.list_tracks_from_result(selected)
                     self._enqueue(tracks, play_immediately=False)
-            elif (ch_ord == ord(" ") or ch_ord == ord("p")) and self.state.current_view == "home":
+            elif ch_ord == ord("p") and self.state.current_view != "home":
+                if not self.state.list_items:
+                    self.state.status = "Nothing selected"
+                else:
+                    selected = self.state.list_items[self.state.selected_index]
+                    if selected.kind in ("albums", "playlists"):
+                        tracks = self.backend.list_tracks_from_result(selected)
+                        self._enqueue(tracks, play_immediately=True)
+                    else:
+                        self.state.status = (
+                            "p shortcut plays+queues selected album/playlist"
+                        )
+            elif (
+                ch_ord == ord(" ") or ch_ord == ord("p")
+            ) and self.state.current_view == "home":
                 if self.state.current_track:
                     if self.player.is_paused:
                         self.player.resume()

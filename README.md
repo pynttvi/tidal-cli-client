@@ -35,6 +35,29 @@ source .venv/bin/activate
 python3 -m pip install -r requirements.txt
 ```
 
+## Install From AUR
+
+Using an AUR helper:
+
+```bash
+yay -S tidal-cli-client-python
+```
+
+or
+
+```bash
+paru -S tidal-cli-client-python
+```
+
+Manual AUR install:
+
+```bash
+git clone https://aur.archlinux.org/tidal-cli-client-python.git
+cd tidal-cli-client-python
+makepkg -fs
+sudo pacman -U tidal-cli-client-python-*.pkg.tar.*
+```
+
 ## Run
 
 ```bash
@@ -197,6 +220,28 @@ Install built package:
 ```bash
 sudo pacman -U ./tidal-cli-client-python-*.pkg.tar.*
 ```
+
+### One-command release (GitHub + AUR)
+
+To publish a version to both GitHub and AUR in one command:
+
+```bash
+./scripts/release-github-aur.sh 0.1.1
+```
+
+What it does:
+
+- Updates `packaging/aur/PKGBUILD` and `packaging/aur/.SRCINFO` to the version
+- Commits those metadata changes (if needed)
+- Pushes your current branch to `origin`
+- Creates and pushes Git tag `v<version>`
+- Clones AUR repo `tidal-cli-client-python`, copies `PKGBUILD` + `.SRCINFO`, commits, and pushes
+
+Requirements:
+
+- Clean local git working tree
+- `origin` remote configured and push access to GitHub
+- AUR account + SSH key configured for `ssh://aur@aur.archlinux.org/tidal-cli-client-python.git`
 
 ## Legacy Context
 
