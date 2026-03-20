@@ -15,7 +15,7 @@ from .tidal_backend import SearchResult, TidalBackend
 
 HELP_TEXT = (
     "Commands: search <query> | search <type> <query> (track/album/artist/playlist also work) | playlists | queue | pause | resume | "
-    "next | skip <n> | shuffle | home | quit | g=home | p=play+queue album/playlist | Enter=open/play | Backspace=back"
+    "next | skip <n> | shuffle | home | quit | g=home | u=my playlists | p=play+queue album/playlist | Enter=open/play | Backspace=back"
 )
 
 
@@ -209,6 +209,7 @@ class CursesTidalApp:
             "  Space or p: play/pause",
             "  n: play next track",
             "  s: search",
+            "  u: my playlists",
             "  q: quit",
             "",
             "Quick Start",
@@ -552,6 +553,11 @@ class CursesTidalApp:
             elif ch_ord == ord("s") and self.state.current_view == "home":
                 self.state.entering_command = True
                 self.state.command = "search "
+            elif ch_ord == ord("u") and self.state.current_view == "home":
+                try:
+                    self._show_playlists()
+                except Exception as exc:  # noqa: BLE001
+                    self.state.status = f"Failed to load playlists: {exc}"
             elif ch_ord == ord("n"):
                 if self.state.current_view == "home":
                     self._play_next_from_queue()

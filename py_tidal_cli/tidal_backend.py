@@ -183,6 +183,9 @@ class TidalBackend:
 
     def _to_search_result(self, item: Any) -> SearchResult:
         kind = item.__class__.__name__.lower() + "s"
+        # UserPlaylist is still a playlist — normalise so downstream logic matches
+        if kind == "userplaylists":
+            kind = "playlists"
         item_id = str(getattr(item, "id", getattr(item, "uuid", "")))
         title = getattr(item, "name", None) or getattr(item, "title", None) or item_id
 

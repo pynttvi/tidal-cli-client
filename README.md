@@ -100,6 +100,7 @@ Front Page Shortcuts
   Space or p: play/pause
   n: play next track
   s: search
+  u: my playlists
   q: quit
 
 ---------------------------------------------------------------------
