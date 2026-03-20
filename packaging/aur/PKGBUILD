@@ -1,6 +1,6 @@
 # Maintainer: Your Name <you@example.com>
 pkgname=tidal-cli-client-python
-pkgver=0.1.0
+pkgver=0.2.0
 pkgrel=1
 pkgdesc='Keyboard-first TIDAL terminal client (Python curses)'
 arch=('any')
