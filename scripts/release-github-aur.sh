@@ -49,8 +49,14 @@ if [ "$CURRENT_BRANCH" = "HEAD" ]; then
 fi
 
 if git rev-parse "$TAG" >/dev/null 2>&1; then
-  echo "Tag $TAG already exists locally. Delete/move it first." >&2
-  exit 1
+  echo "Warning: local tag $TAG already exists. Re-creating it." >&2
+  git tag -d "$TAG"
+fi
+
+# Also delete the remote tag if it already exists, so the push later doesn't fail.
+if git ls-remote --tags origin "refs/tags/$TAG" | grep -q "$TAG"; then
+  echo "Warning: remote tag $TAG already exists. Deleting from origin." >&2
+  git push origin ":refs/tags/$TAG"
 fi
 
 # Step 1: bump pkgver in PKGBUILD only — do NOT run updpkgsums yet because
