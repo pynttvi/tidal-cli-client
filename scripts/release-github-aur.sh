@@ -35,6 +35,16 @@ if [ ! -f "$AUR_DIR/PKGBUILD" ] || [ ! -f "$AUR_DIR/.SRCINFO" ]; then
   exit 1
 fi
 
+# Fail early if AUR SSH auth is not working for this package.
+if ! GIT_SSH_COMMAND="ssh -o BatchMode=yes" git ls-remote "$AUR_REMOTE_URL" >/dev/null 2>&1; then
+  echo "AUR SSH authentication failed for $AUR_REMOTE_URL" >&2
+  echo "Fix this first, then re-run release:" >&2
+  echo "  1) Ensure your AUR public key is added to your account settings" >&2
+  echo "  2) Load the matching private key into ssh-agent (or configure ~/.ssh/config for aur.archlinux.org)" >&2
+  echo "  3) Verify access: GIT_SSH_COMMAND='ssh -o BatchMode=yes' git ls-remote $AUR_REMOTE_URL" >&2
+  exit 1
+fi
+
 cd "$REPO_ROOT"
 
 if [ -n "$(git status --porcelain)" ]; then
